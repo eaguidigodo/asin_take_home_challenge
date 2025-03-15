@@ -3,6 +3,7 @@ import pg8000
 from dotenv import load_dotenv
 from datetime import datetime
 import os
+import time
 
 
 def connect_to_db(data=None):
@@ -59,6 +60,7 @@ def connect_to_db(data=None):
 
 def import_data(xls_file_path):
     """ Import data from excel file to database. """
+    start_time = time.time()
     print(f"We are reading {xls_file_path} that you provide us...")
     try:
         df = pd.read_excel('people sample.xlsx')
@@ -73,6 +75,8 @@ def import_data(xls_file_path):
         print("Everything is going smoothly. Now we are about to connect to your database....")
         rowcount = connect_to_db(people)
         print(f"{rowcount} rows successful added.")
+        print(f"Import completed in {time.time() - start_time:.2f} seconds.")
+
     except Exception as e:
         print("Sorry, we got an error while importing data from your files.", e)
         return None
