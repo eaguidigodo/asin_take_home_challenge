@@ -56,9 +56,9 @@ def connect_to_db(data=None):
         if connection:
             connection.close()
 
-def standardise_date(date_str):
+def standardize_date(date_str):
     try:
-        date_obj = dateutil.parser.parse(date_str)
+        date_obj = dateutil.    parser.parse(date_str)
         return date_obj.strftime("%Y-%m-%d")
     except Exception as e:
         print(f"There is an error when converting the date '{date_str}': {e}")
@@ -73,12 +73,12 @@ def import_data(xls_file_path):
         df = pd.read_excel(xls_file_path)
         expected_columns = {"matricule","nom","prenom","datedenaissance","status"}
         if not expected_columns.issubset(df.columns):
-            print("Sorry, seems that your file does not contains expected columns.")
+            print("Sorry, seems that your file structure does not match the expected one.")
             return None
         people = []
         print("We retrived your data. We are preparing them to insert them into the database.")
         for _, row in df.iterrows():
-            datedenaissance = standardise_date(row["datedenaissance"])
+            datedenaissance = standardize_date(row["datedenaissance"])
             people.append((row["matricule"], row["nom"], row["prenom"], datedenaissance, row["status"]))
         print("Everything is going smoothly. Now we are about to connect to your database....")
         rowcount = connect_to_db(people)
@@ -86,7 +86,7 @@ def import_data(xls_file_path):
         print(f"Import completed in {time.time() - start_time:.2f} seconds.")
 
     except Exception as e:
-        print("Sorry, we got an error while importing data from your files.", e)
+        print("Sorry, we got an error while importing data from your file. Please make sure you provide the good file by checking the file path and the file extension. We are expecting an excel file.")
         return None
 
 
