@@ -2,6 +2,7 @@ import pandas as pd
 import pg8000
 from dotenv import load_dotenv
 from datetime import datetime
+import dateutil
 import os
 import time
 import argparse
@@ -39,7 +40,7 @@ def connect_to_db(data=None):
                        matricule VARCHAR(255),
                        nom VARCHAR(255), 
                        prenom VARCHAR(50),
-                       datedenaissance VARCHAR(255),
+                       datedenaissance DATE,
                        status VARCHAR(255)
                     )
                        """
@@ -55,17 +56,21 @@ def connect_to_db(data=None):
         if connection:
             connection.close()
 
-# def standardise_date(date_str):
-#     date_obj = datetime.strptime(date_str, "%d/%m/%Y")
-#     date_pg = date_obj.strftime("%Y-%m-%d")
-#     return date_pg
+def standardise_date(date_str):
+    try:
+        date_obj = dateutil.parser.parse(date_str)
+        return date_obj.strftime("%Y-%m-%d")
+    except Exception as e:
+        print(f"There is an error when converting the date '{date_str}': {e}")
+        return None
+
 
 def import_data(xls_file_path):
     """ Import data from excel file to database. """
     start_time = time.time()
     print(f"We are reading {xls_file_path} that you provide us...")
     try:
-        df = pd.read_excel('people sample.xlsx')
+        df = pd.read_excel(xls_file_path)
         expected_columns = {"matricule","nom","prenom","datedenaissance","status"}
         if not expected_columns.issubset(df.columns):
             print("Sorry, seems that your file does not contains expected columns.")
@@ -73,7 +78,8 @@ def import_data(xls_file_path):
         people = []
         print("We retrived your data. We are preparing them to insert them into the database.")
         for _, row in df.iterrows():
-            people.append((row["matricule"], row["nom"], row["prenom"], row["datedenaissance"], row["status"]))
+            datedenaissance = standardise_date(row["datedenaissance"])
+            people.append((row["matricule"], row["nom"], row["prenom"], datedenaissance, row["status"]))
         print("Everything is going smoothly. Now we are about to connect to your database....")
         rowcount = connect_to_db(people)
         print(f"{rowcount} rows successful added.")
