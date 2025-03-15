@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from datetime import datetime
 import os
 import time
+import argparse
+import sys
 
 
 def connect_to_db(data=None):
@@ -80,14 +82,14 @@ def import_data(xls_file_path):
     except Exception as e:
         print("Sorry, we got an error while importing data from your files.", e)
         return None
-        
-    #print(type(df))
-
 
 
 if __name__=="__main__":
-    xls_file_path = 'people sample.xlsx'
+    parser = argparse.ArgumentParser(description='Import file from excel file to a database.')
+    parser.add_argument("filename", help="Path of the excel file to import.")
+    args = parser.parse_args()
+    
+    xls_file_path = args.filename
     import_data(xls_file_path)
-    #df = pd.read_excel('people sample.xlsx')
-    #print(df)
+
 
