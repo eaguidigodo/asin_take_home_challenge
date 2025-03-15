@@ -31,14 +31,14 @@ def connect_to_db(data=None):
         )
         print("Connection successful! We will now create the table that will store your data....")
     except Exception as e:
-        print("Sorry, we are unable to connect to your database:", e)
+        print("Sorry, we are unable to connect to your database. Please check you provide us with good credentials in the .env file.")
     else:
         cursor = connection.cursor()
         cursor.execute("""
                        CREATE TABLE IF NOT EXISTS people (
                        id SERIAL PRIMARY KEY,
-                       matricule VARCHAR(255),
-                       nom VARCHAR(255), 
+                       matricule VARCHAR(200),
+                       nom VARCHAR(50), 
                        prenom VARCHAR(50),
                        datedenaissance DATE,
                        status VARCHAR(255)
@@ -46,7 +46,7 @@ def connect_to_db(data=None):
                        """
         )
         print("Table created!")
-        print("It's almost done! It's the last step. Your data is being inserted into a database. This may take some time. Wait please until it's completed....")
+        print("It's almost done! It's the last step. Your data is being inserted into a database. This may take some time. Please wait until it's completed....")
         if data is not None:
             query = "INSERT INTO people (matricule, nom, prenom, datedenaissance, status) VALUES (%s, %s, %s, %s, %s)"
             cursor.executemany(query, data)
@@ -58,10 +58,10 @@ def connect_to_db(data=None):
 
 def standardize_date(date_str):
     try:
-        date_obj = dateutil.    parser.parse(date_str)
+        date_obj = dateutil.parser.parse(date_str)
         return date_obj.strftime("%Y-%m-%d")
     except Exception as e:
-        print(f"There is an error when converting the date '{date_str}': {e}")
+        print(f"There is an error when converting the date '{date_str}'")
         return None
 
 
@@ -84,6 +84,7 @@ def import_data(xls_file_path):
         rowcount = connect_to_db(people)
         print(f"{rowcount} rows successful added.")
         print(f"Import completed in {time.time() - start_time:.2f} seconds.")
+        print("Thanks for your patience.")
 
     except Exception as e:
         print("Sorry, we got an error while importing data from your file. Please make sure you provide the good file by checking the file path and the file extension. We are expecting an excel file.")
@@ -91,7 +92,7 @@ def import_data(xls_file_path):
 
 
 if __name__=="__main__":
-    parser = argparse.ArgumentParser(description='Import file from excel file to a database.')
+    parser = argparse.ArgumentParser(description='Import data from excel file to a database.')
     parser.add_argument("filename", help="Path of the excel file to import.")
     args = parser.parse_args()
     
