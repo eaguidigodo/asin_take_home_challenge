@@ -10,7 +10,7 @@ fichier main. (Vous pouvez vous servir du fichier env_sample fourni dans ce rép
 - Installer les dépendances contenues dans le fichier `requirements.txt`:
     - `pip -r install requirements.txt`
 Pour exécuter le programme, lancer la commande suivante:
-- `python3 main-py chemin_vers_le_fichier_excel`
+- `python3 main.py chemin_vers_le_fichier_excel`
 
 ## English version
 This program is designed to populate a database from an Excel file.  
